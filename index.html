@@ -18,6 +18,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
         
         h1 {
@@ -26,7 +27,7 @@
             position: absolute;
             top: 20px;
             width: 100%;
-            z-index: 1;
+            z-index: 2;
         }
         
         video {
@@ -34,12 +35,37 @@
             height: 100%;
             object-fit: contain;
         }
+
+        .start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .start-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="video-container">
         <h1>Accept the Pain 🧘🏽‍♂️</h1>
-        <video id="myVideo" autoplay muted playsinline>
+        <button id="startButton" class="start-button">Click to Start</button>
+        <video id="myVideo">
             <source src="./acceptPain.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
@@ -48,22 +74,53 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const video = document.getElementById('myVideo');
+            const startButton = document.getElementById('startButton');
             
-            // Request fullscreen when video starts playing
-            video.addEventListener('play', function() {
-                if (video.requestFullscreen) {
-                    video.requestFullscreen();
-                } else if (video.webkitRequestFullscreen) {
-                    video.webkitRequestFullscreen();
-                } else if (video.msRequestFullscreen) {
-                    video.msRequestFullscreen();
+            // Function to handle fullscreen
+            function enterFullscreen(element) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
                 }
+            }
+
+            // Start button click handler
+            startButton.addEventListener('click', function() {
+                // Hide the start button
+                startButton.classList.add('hidden');
+                
+                // Play video
+                video.play();
+                
+                // Unmute video
+                video.muted = false;
+                
+                // Request fullscreen
+                enterFullscreen(video);
+
+                // Add fullscreen change event listener
+                document.addEventListener('fullscreenchange', function() {
+                    if (!document.fullscreenElement) {
+                        // If user exits fullscreen, try to enter it again
+                        enterFullscreen(video);
+                    }
+                });
             });
 
-            // Unmute video on first user interaction
-            document.addEventListener('click', function() {
-                video.muted = false;
-            }, { once: true });
+            // Handle video end
+            video.addEventListener('ended', function() {
+                // Optional: loop the video
+                video.play();
+            });
+
+            // Handle any errors
+            video.addEventListener('error', function(e) {
+                console.error('Error playing video:', e);
+                startButton.textContent = 'Error loading video';
+            });
         });
     </script>
 </body>
