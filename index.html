@@ -1,127 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Search</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            overflow: hidden;
-        }
-        
-        .video-container {
-            width: 100vw;
-            height: 100vh;
+        body {
+            font-family: 'Roboto', sans-serif;
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            position: relative;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        
-        h1 {
-            color: white;
-            text-align: center;
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            z-index: 2;
-        }
-        
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .start-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            padding: 20px 40px;
-            font-size: 24px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid white;
+        .container {
+            background: #1e1e1e;
+            padding: 20px;
             border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            background: #333;
+            color: white;
+            box-sizing: border-box;
+        }
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        button {
+            background: #6200ea;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
-
-        .start-button:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+        button:hover {
+            background: #3700b3;
         }
-
-        .hidden {
-            display: none;
+        @media (min-width: 768px) {
+            .container {
+                width: 350px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <h1>DID YOU ACCEPT THE PAIN...</h1>
-        <button id="startButton" class="start-button">Yes</button>
-        <video id="myVideo">
-            <source src="./acceptPain.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+    <div class="container">
+        <h2>Multi-Search Engine</h2>
+        <input type="text" id="searchQuery" placeholder="Enter your search query">
+        <div class="btn-container">
+            <button onclick="search('google')">Google</button>
+            <button onclick="search('youtube')">YouTube</button>
+            <button onclick="search('maps')">Google Maps</button>
+            <button onclick="search('brave')">Brave Search</button>
+            <button onclick="search('chatgpt')">ChatGPT</button>
+            <button onclick="search('amazon')">Amazon</button>
+            <button onclick="search('flipkart')">Flipkart</button>
+            <button onclick="search('myntra')">Myntra</button>
+        </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const video = document.getElementById('myVideo');
-            const startButton = document.getElementById('startButton');
+        function search(engine) {
+            let query = document.getElementById('searchQuery').value;
+            if (query.trim() === '') return;
+            let url = '';
             
-            // Function to handle fullscreen
-            function enterFullscreen(element) {
-                if (element.requestFullscreen) {
-                    element.requestFullscreen();
-                } else if (element.webkitRequestFullscreen) {
-                    element.webkitRequestFullscreen();
-                } else if (element.msRequestFullscreen) {
-                    element.msRequestFullscreen();
-                }
+            switch(engine) {
+                case 'google':
+                    url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                    break;
+                case 'youtube':
+                    url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+                    break;
+                case 'maps':
+                    url = `https://www.google.com/maps/search/${encodeURIComponent(query)}`;
+                    break;
+                case 'brave':
+                    url = `https://search.brave.com/search?q=${encodeURIComponent(query)}`;
+                    break;
+                case 'chatgpt':
+                    url = `https://chat.openai.com/?q=${encodeURIComponent(query)}`;
+                    break;
+                case 'amazon':
+                    url = `https://www.amazon.com/s?k=${encodeURIComponent(query)}`;
+                    break;
+                case 'flipkart':
+                    url = `https://www.flipkart.com/search?q=${encodeURIComponent(query)}`;
+                    break;
+                case 'myntra':
+                    url = `https://www.myntra.com/${encodeURIComponent(query)}`;
+                    break;
             }
-
-            // Start button click handler
-            startButton.addEventListener('click', function() {
-                // Hide the start button
-                startButton.classList.add('hidden');
-                
-                // Play video
-                video.play();
-                
-                // Unmute video
-                video.muted = false;
-                
-                // Request fullscreen
-                enterFullscreen(video);
-
-                // Add fullscreen change event listener
-                document.addEventListener('fullscreenchange', function() {
-                    if (!document.fullscreenElement) {
-                        // If user exits fullscreen, try to enter it again
-                        enterFullscreen(video);
-                    }
-                });
-            });
-
-            // Handle video end
-            video.addEventListener('ended', function() {
-                // Optional: loop the video
-                video.play();
-            });
-
-            // Handle any errors
-            video.addEventListener('error', function(e) {
-                console.error('Error playing video:', e);
-                startButton.textContent = 'Error loading video';
-            });
-        });
+            window.open(url, '_blank');
+            document.getElementById('searchQuery').value = '';
+        }
     </script>
 </body>
 </html>
